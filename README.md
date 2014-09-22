@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # House Pricing Modeling
     
 ![house_loc_map](https://github.com/beingzy/housePriceEstimation/blob/master/output/house_loc_map.png)
