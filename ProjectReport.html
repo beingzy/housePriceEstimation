@@ -1,0 +1,140 @@
+<h1 id="house-pricing-modeling">House Pricing Modeling</h1>
+<div class="figure">
+<img src="output/house_loc_map.png" alt="house_loc_map" height="600" width="600" /><p class="caption">house_loc_map</p>
+</div>
+<blockquote>
+<h3>Data Manipulation:</h3>
+</blockquote>
+<ul>
+<li>Variable Transformation:</li>
+</ul>
+<ol style="list-style-type: decimal">
+<li><strong>transdate</strong>: <strong>trans_spr_ind</strong>, <strong>trans_sum_ind</strong>, <strong>trans_fal_ind</strong> and <strong>trans_win_ind</strong> are created to model the seasonal effects on housing market;</li>
+<li><strong>tranddate</strong>, <strong>builtyear</strong>: <strong>trans_build_age</strong> indicates the number of years since the building being constructed;</li>
+<li><strong>transdate_previous</strong>: <strong>trans_prev_ind</strong> indicates if the house had been traded before if none missing value is present;</li>
+<li><strong>transdate</strong>, <strong>transdate_previous</strong>: <strong>trans_prev_numyear</strong> (= <strong>transdate</strong> - <strong>transdate_previous</strong>) is used to calculate the future value of past transaction value to account for inflation effects;</li>
+<li><strong>transvalue_previous</strong>: <strong>trans_val_2005</strong> is calculate the future value in 2005 of previous with annual CPI data and <strong>trans_prev_numyear</strong></li>
+<li><strong>finished_lot_ratio</strong>: (<strong>finishedsquarefeet</strong> / <strong>lotsizesquarefeet</strong>) is computed with considering that it could provide some aspects information about the house type and neighbourhood;</li>
+<li><strong>storycnt</strong>: <strong>story_single_ind</strong> and <strong>story_mult_ind</strong>, dummy variables, are created to tell if there are multiple storis in the unit. Replacing a multiple level variable with a set of dummy variables can eliminate the underlying assumption about the cardinality effect;</li>
+<li><strong>viewtype</strong>: a set of 8 dummay variable <strong>view_type[0-8]</strong></li>
+<li><strong>full_censustract</strong>: concatenate <strong>530330</strong> and <strong>censustract</strong></li>
+<li><strong>latitude</strong>, <strong>longitude</strong>: /1000000, will be used to calculate distance when merging with other data resource, if no unique key(ZIP, censustract) could match, geo location woull be utilized.</li>
+<li><strong>transvalue</strong>: <strong>transvalue_log</strong> = log(<strong>transvalue</strong>, 10) follows a normal distribution</li>
+<li><strong>trans_val_2005</strong>: <strong>trans_val_2005_log</strong> = log(<strong>trans_val_2005</strong>, 10)</li>
+</ol>
+<ul>
+<li>External Data</li>
+</ul>
+<ol style="list-style-type: decimal">
+<li><p><em>ZIP_TRACT_032010.csv</em>, using 2010 data to offer a approximated information on neighborhood residential unit percentage, commercial unit precentage and etc.</p></li>
+<li><p><em>ZILLOW_ZIP_PRICE.csv</em>, zillow.com developer API is used to query against ZIP to pull out the <strong>median_list_price</strong> and <strong>median_list_price_per_sqft</strong>.</p></li>
+</ol>
+<ul>
+<li>Missing Value Handling:</li>
+</ul>
+<ol style="list-style-type: decimal">
+<li><code>rfImpute()</code> in <em>&quot;randomForest&quot;</em> packages is used to mute the missing value</li>
+</ol>
+<ul>
+<li>Other Data Processing:</li>
+</ul>
+<ol style="list-style-type: decimal">
+<li><code>scale()</code> apply to make data centered and scaled to avoid some convergance issue in <code>lm()</code> and improve the fitting.</li>
+</ol>
+<blockquote>
+<h3>Modeling</h3>
+</blockquote>
+<ul>
+<li>Model Selection:</li>
+</ul>
+<ol style="list-style-type: decimal">
+<li><p><em>response variable</em>: <code>transvalue_log</code></p></li>
+<li><p><em>predictor variable</em>:</p>
+<pre><code>&quot;trans_spr_ind&quot;, &quot;trans_sum_ind&quot;, &quot;trans_fal_ind&quot;, &quot;trans_win_ind&quot;
+, &quot;trans_prev_ind&quot;, &quot;trans_prev_numyear&quot;
+, &quot;trans_val_2005&quot;
+, &quot;trans_build_age&quot;
+, &quot;bathroomcnt&quot;, &quot;bedroomcnt&quot;
+, &quot;finishedsquarefeet&quot;, &quot;lotsizesquarefeet&quot;, &quot;finished_lot_ratio&quot;
+, &quot;story_single_ind&quot;, &quot;story_mult_ind&quot;
+, &quot;view_type0&quot;, &quot;view_type1&quot;, &quot;view_type2&quot;, &quot;view_type3&quot;, &quot;view_type4&quot;,&quot;view_type5&quot;, &quot;view_type6&quot;
+, &quot;res_ratio&quot;, &quot;bus_ratio&quot;, &quot;oth_ratio&quot;, &quot;tot_ratio&quot;
+, &quot;median_list_price&quot;, &quot;median_value_per_sqft&quot;</code></pre></li>
+<li><p><em>3-fold cross validtion</em> is employed to do model selection</p></li>
+<li><p><em>Random Forest</em> in <code>require('randomForest')</code> <code>randomForest(x = train.x, train.y, ntree = 1000, mtry = 4)</code></p></li>
+<li><p><em>General Linear Regression</em> in <code>require('mboost')</code> <code>glmboost(y ~ ., data, center = TRUE, control = boost_control(mstop = 2000) )</code></p></li>
+<li><p><em>Stepwise Linear Regression</em> in <code>lm()</code> and <code>require(MASS)</code></p>
+<pre><code>stepAIC(lm(y ~ ., data = as.data.frame(cbind(train.y, train.x))))</code></pre></li>
+<li><p><em>Suport Vector Machine</em> (kernel = 'linear') in <code>require('e1071')</code></p>
+<pre><code>svm(x, y, scale = TRUE, type = &quot;eps&quot;, kernel = &quot;linear&quot;)</code></pre></li>
+<li><p><em>Train-error correlation examination</em></p></li>
+</ol>
+<ul>
+<li>Model Ensemble</li>
+</ul>
+<ol style="list-style-type: decimal">
+<li><p>Training <em>Random Forest</em>, <em>glmboost</em>, <em>linear regression</em> and <em>SVM</em> with 100% training data;</p></li>
+<li><p>Ensemble 4 models by averaging predictions genered by 4 individual models</p></li>
+</ol>
+<blockquote>
+<h3>Results Summary</h3>
+</blockquote>
+<ul>
+<li><p><strong>Individual Model Performance</strong> based on 3-fold cross-validation can be found in <em>output/CROSS_VALID_RESULTS.csv</em>:</p></li>
+<li><p><strong>The scatterplot of error vs. log(trans value)</strong> is shown as below:</p>
+<div class="figure">
+<img src="output/error_scatterplot.png" alt="scatterplot_error_tranvallog" height="450" width="600" /><p class="caption">scatterplot_error_tranvallog</p>
+</div></li>
+</ul>
+<p><strong>Discussion</strong>: Prediction errors for extremely high/low price units are susbtantial than the erros for median price units. This issue could be addressed by learning more cases of extreme prices. Additionally, it would be helpful to increase the accuracy by feeds of different data source, which could privde different information about house price pattern.</p>
+<ul>
+<li><p><strong>Final prediction model</strong> is an ensembled one by blending RandomForest, GLM Boosting and SVM(linear) with weights (4/10, 3/10, 3/10).</p></li>
+<li><p><strong>Accuracy of Prediction</strong> for Validation data (error data: <em>output/VALID_PREDICTION.csv</em> and results reprot: <em>VALID_PREF_REPORT.csv</em> ):</p>
+<ol style="list-style-type: lower-alpha">
+<li><p><strong>Median of Absolute Error</strong>: 43,375.00</p></li>
+<li><p><strong>Percentage within +/- 5%</strong>: 63.42%</p></li>
+<li><p><strong>Percentage within +/- 10%</strong>: 73.28%</p></li>
+<li><p><strong>Percentage within +/- 20%</strong>: 84.94%</p></li>
+</ol></li>
+</ul>
+<blockquote>
+<h3>Future Improvement Discussion</h3>
+</blockquote>
+<h4 id="current-methodology-refinement">1. Current Methodology Refinement</h4>
+<ul>
+<li><p><strong>Missing Value Handling</strong> In the train data set, there a big proportion of records with missing value lack value in mulitple predictor variables. By populating their records with imputed values, the inclusion of those records could contribute noise more than information. Therefore, alternatively treatment on missing value should be tested as well.</p></li>
+<li><p><strong>Feature Selection/Extraction</strong> Most non-ensembled algorithm is sensentive to the representation of variables and non-informative variables. With objective of finding optimistic representation of data, feature selection, eliminating redundant variables, and feature extraction (e.g. PCA, MDS ane etc.), tranforming the presentation of data worth efforts to explore. In addition to potential accuracy increase, the computation cost could be reduced as well.</p></li>
+<li><p><strong>Ensembling Weigths based on Minimization of Error</strong> In current method, weights applied in blending individual models is based on empirical choice and cross-validation results. However, a more sophisticate method can be untilized to make best of each models's superior performance on segments of units. It is to use optimization technology which can find optimistic weights to minimize overall errors. And, with adopting this optimistic weights, some level of improvement in accuracy is expected to be achieved.</p></li>
+<li><p><strong>Modeling Human Experts Knowledge</strong> Appraisers' specialties could offer insights into determinating factors in house value. And, some special relationships among variables could be leveraged to create new variables.</p></li>
+</ul>
+<h4 id="data-source">2. Data Source</h4>
+<p>Overall, house price is determined by a broad set of factors. In general, those factors can be classified into either of following categories: house quality information (house layout, built age, design, maintenance and etc.), neighborhood information (residents education level, culture and etc.), public infrastructure information (school quality, traffic condition) and market force information (supply/demand, macro-economic). The access to some information can be relatively easy to be gained, in comparison with others. With considering limited access to house quality information, the effort is recommended to be concentrated on incorporating a broad set of public information. Thanks to the advance of mobile/web technology, there are a lot of data source can be leveraged. I will discuss some of them, which I think could be helpful to boost accuracy of house price estimation.</p>
+<ul>
+<li><strong>Demographic information of residents</strong> (e.g. race, age, income and etc.)</li>
+</ul>
+<p><strong>Description</strong>: it is assumed the existence of strong correlation between social status and community cultural, which has substantial influence on house price.</p>
+<p><strong>Source</strong>: census.gov</p>
+<ul>
+<li><strong>Merchant information within definite proximity</strong> (e.g. starbucks, whole foods, KFC and etc.)</li>
+</ul>
+<p><strong>Description</strong>: a particular merchant does have their own target customer base. And, their footprints represent their knowledge about the neighborhood. Therefore, their footprints are assumed to provide relevant information about customer, residents within a region. Some indicative pattern hidden in their footprints is expected. In addition to collecting the presence of a selection of merchants, it could worth experimenting the value of mining reviews texts attached to each merchants. Those type review information is available over multiple online channels (e.g. yelp). The difference of wording, phrase, rating distribution attached to different branches of same chain store could reveal uniqueness of residents within different regions.</p>
+<p><strong>Source</strong>: google map API, starbucks API, yelp API, foursquare API</p>
+<ul>
+<li><strong>Education Institute information</strong></li>
+</ul>
+<p><strong>Description</strong>: access to high quality school is considered as an influential factor in house price</p>
+<p><strong>Source</strong>: http://nces.ed.gov/</p>
+<ul>
+<li><strong>Traffic Information</strong>:</li>
+</ul>
+<p><strong>Description</strong>: the proximity to highway and local road could provide information about convenience of the unit location. And, it is also possible to provide the noise level in neighborhood.</p>
+<ul>
+<li><strong>House demand/supply information</strong></li>
+</ul>
+<p><strong>Description</strong>: new planed house units represent addition to market supply. The employments on city-level could be indicative in market demand.</p>
+<ul>
+<li><strong>Macro-economic data</strong></li>
+</ul>
+<p><strong>Description</strong>: CPI, interest rate, mortgage, house price increase rate, unemployment rate and etc. have provide information on the potential buying power of the entire market.</p>
+<h4 id="algorithm-discussion">3. Algorithm Discussion</h4>
+<p>However, incorporating the broad spectrum of data raised an issue on transforming features. The traditional algorithms are sensitive to choice on data transformation. Ensemble method can partially reduce the issues. However, supervised deep learning could be utilized to automatic construct abstract representation of data. With feeds of more relevant information and their appropriate representation, it is expected to train a model with better accuracy. However, some features maybe informative in some regions/cities. In elsewhere, it could turned out to be an addition to noise. Considering this, clustering analysis might be useful to categorize the nationwide cities based on their industry concentration, wealth conditions and so on. Based on this clustering effects, we can possible build region-specific model to achieve the flexibility of deployments, monitoring, maintenance of models, in addition to potential increase in accuracy.</p>

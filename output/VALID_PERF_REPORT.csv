@@ -1,0 +1,2 @@
+"ensembled_models","abs_error_median","within_5pct","within_10pct","within_20pct"
+"RF, glmboost, lm (weights: 4, 3, 3)",42434.1640531051,0.643429487179487,0.740785256410256,0.859775641025641
