@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # House Pricing Modeling
     
 ![house_loc_map](https://github.com/beingzy/housePriceEstimation/blob/master/output/house_loc_map.png)
@@ -163,3 +164,9 @@ In addition to collecting the presence of a selection of merchants, it could wor
 However, incorporating the broad spectrum of data raised an issue on transforming features.  The traditional algorithms are sensitive to choice on data transformation. Ensemble method can partially reduce the issues. However, supervised deep learning could be utilized to automatic construct abstract representation of data.  With feeds of more relevant information and their appropriate representation, it is expected to train a model with better accuracy.  However, some features maybe informative in some regions/cities. In elsewhere, it could turned out to be an addition to noise. Considering this, clustering analysis might be useful to categorize the nationwide cities based on their industry concentration, wealth conditions and so on. Based on this clustering effects, we can possible build region-specific model to achieve the flexibility of deployments, monitoring, maintenance of models, in addition to potential increase in accuracy.
 
 
+=======
+housePriceEstimation
+====================
+
+> Training Model to estimate hourse price given basic information on real estate perproty
+>>>>>>> 17e852584a1a729c8aa6f9187ec4b7ff8a3bde24

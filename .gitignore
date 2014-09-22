@@ -1,4 +1,9 @@
+<<<<<<< HEAD
 .Rhistory
 .RData
 validation_ZILLOW_CONFIDENTIAL.csv
 training_ZILLOW_CONFIDENTIAL.csv   
+=======
+doc/*.pdf
+temp
+>>>>>>> 17e852584a1a729c8aa6f9187ec4b7ff8a3bde24

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ## ######################################## ##
 ## DEVELOP MODELS TO ESTIMATE HOUSE PRICE   ##
 ##                                          ##
@@ -33,10 +34,53 @@ temp    <- list() # Store temporary data to keep working space clean
 config  <- list() # global setting
 img     <- list() # Store images objects
 model   <- list()
+=======
+# ############################################################ #
+# House Price Esitmation Model (Zillow.com interview exercise) #
+#                                                              #
+# Author: Yi Zhang                                             #
+# Email: uc.yizhang@gmail.com (beingzy@gmail.com)              #
+# Create Date: SEP/22/2014                                     #
+# ############################################################ #
+# Install dependent packages
+# temp.pkgs <- c("reshape2", "plyr", "timeDate", "ggplot2", "ggmap", 
+#                "nnet", "randomForest", "e1071", "RCurl")
+# install.packages(pkgs=temp.pkgs)
+rm(list = ls())
+
+# ---- toolbox ------ #
+library(reshape2)     # Data Preparating
+library(plyr)         # Data Wrangling
+library(timeDate)     # Date time manipulating
+# ---- Web Request--- #
+library(RCurl)        #
+library(XML)          # XML IO
+library(RJSONIO)      # JSON IO
+# ----- visual ------ #
+library(ggplot2)      # Data Visualization
+library(ggmap)        # Map data visualization
+# ----- modeling ---- #
+library(nnet)         # Nueral Network
+library(randomForest) # Utitlize na.roughFix() to impute missing data
+library(e1071)        # SVM
+# ----- data -------- #
+library(zipcode)
+library(maps)
+
+# ############################### #
+# SETTING ENVIRONMENT -------------
+# ############################### #
+dir     <- list() # Directory
+temp    <- list() # Store temporary data to keep working space clean
+config  <- list() # global setting
+summary <- list() # Store aggregate information
+img     <- list() # Store images objects
+>>>>>>> 17e852584a1a729c8aa6f9187ec4b7ff8a3bde24
 
 dir$root   <- paste(getwd(),  "/",       sep = "")
 dir$data   <- paste(dir$root, "data/",   sep = "")
 dir$output <- paste(dir$root, "output/", sep = "")
+<<<<<<< HEAD
 #dir$doc    <- paste(dir$root, "doc/",    sep = "")
 #dir$img    <- paste(dir$root, "images",  sep = "")
 #
@@ -55,6 +99,19 @@ config$id_var         <- c("propertyid")
 ## ############################### ##
 ## FUNCTION DEFINITION --------------
 ## ############################### ##
+=======
+dir$doc    <- paste(dir$root, "doc/",    sep = "")
+dir$img    <- paste(dir$root, "images",  sep = "")
+
+# develop code data
+config$data_util_rate <- .2  # < 1 for developing purpose, =1 for training model
+config$zillow_api_key <- "X1-ZWz1dwiguygqob_agge7"
+config$census_api_key <- "bca6ac619083f4619242e65caa01ebb1f765c107"
+
+# ############################### #
+# FUNCTION DEFINITION --------------
+# ############################### #
+>>>>>>> 17e852584a1a729c8aa6f9187ec4b7ff8a3bde24
 getDataPath <- function(filename, dir){
   # ************************************ #
   # Return file path given dir&filename  #
@@ -114,7 +171,11 @@ num2char <- function(x, numchar = 5, appendix=""){
   return(res)
 }
 
+<<<<<<< HEAD
 getZillowZipPrice <- function(zip, APIkey, puase.time = 0){
+=======
+getZillowZipPrice <- function(zip, APIkey){
+>>>>>>> 17e852584a1a729c8aa6f9187ec4b7ff8a3bde24
   # ********************************************* #
   # Query zillow.com to get median list price     #
   # and price per square feet median of an area   #
@@ -126,12 +187,20 @@ getZillowZipPrice <- function(zip, APIkey, puase.time = 0){
   #   res: (vector), median list price and value  #
   #        per square feet                        #
   # ********************************************* #
+<<<<<<< HEAD
   Sys.sleep(time = puase.time ) # set pause time
   print(paste("Querying Zillow.com about ZIP:", zip, "...", sep = ""))
   url          <- paste("http://www.zillow.com/webservice/GetDemographics.htm?zws-id=", APIkey,"&zip=", zip,sep="")
   res_xml      <- xmlInternalTreeParse(url)
   price_median <- xpathApply(res_xml, "//table[name = 'Affordability Data']/data/attribute[name = 'Median List Price']/values/zip/value", xmlValue)[[1]][1]
   sqft_median  <- xpathApply(res_xml, "//table[name = 'Affordability Data']/data/attribute[name = 'Median Value Per Sq Ft']/values/zip/value", xmlValue)[[1]][1]
+=======
+  print(paste("Querying Zillow.com about ZIP:", zip, "...", sep = ""))
+  url          <- paste("http://www.zillow.com/webservice/GetDemographics.htm?zws-id=", APIkey,"&zip=", zip,sep="")
+  res_xml      <- xmlInternalTreeParse(dev$url)
+  price_median <- xpathApply(dev$res_xml, "//table[name = 'Affordability Data']/data/attribute[name = 'Median List Price']/values/zip/value", xmlValue)[[1]][1]
+  sqft_median  <- xpathApply(dev$res_xml, "//table[name = 'Affordability Data']/data/attribute[name = 'Median Value Per Sq Ft']/values/zip/value", xmlValue)[[1]][1]
+>>>>>>> 17e852584a1a729c8aa6f9187ec4b7ff8a3bde24
   price_median <- as.numeric(price_median)
   sqft_median  <- as.numeric(sqft_median)
   res <- c("median_list_price"= price_median, "median_value_per_sqft" = sqft_median)
@@ -151,7 +220,10 @@ getCensusData <- function(state, fieldnm, APIkey, year = 2010){
   resURL=paste("http://api.census.gov/data/", year, "/sf1?get=",fieldnm,
                "&for=zip+code+tabulation+area:*&in=state:",state,"&key=",
                APIkey,sep="")
+<<<<<<< HEAD
   Sys.sleep(time = .5) # set pause time
+=======
+>>>>>>> 17e852584a1a729c8aa6f9187ec4b7ff8a3bde24
   dfJSON=fromJSON(resURL)
   dfJSON=dfJSON[2:length(dfJSON)]
   dfJSON_zip=sapply(dfJSON,function(x) x[3])
@@ -161,6 +233,7 @@ getCensusData <- function(state, fieldnm, APIkey, year = 2010){
   return(df)
 }
 
+<<<<<<< HEAD
 dateExtractor <- function(date_str, comp = "year"){
   # **************************************** #
   # Extract date component from date string  #
@@ -802,3 +875,108 @@ print(temp.report)
 print(" ************************************************************************ ")
 write.table(x=pred,        file=getDataPath("VALID_PREDICTION.csv",  dir=dir$output), sep = ",", col.names = TRUE, row.names = FALSE)
 write.table(x=temp.report, file=getDataPath("VALID_PERF_REPORT.csv", dir=dir$output), sep = ",", col.names = TRUE, row.names = FALSE)
+=======
+
+# ############################### #
+# LOAD DATA ----------------------
+# ############################### #
+db  <- list()
+sup <- list()
+
+db$TRAIN_ZILLOW <- read.csv(file=getDataPath(filename="training_ZILLOW_CONFIDENTIAL.csv",   dir=dir$data), header = TRUE, sep = ",", stringsAsFactor = FALSE)
+db$VAL_ZILLOW   <- read.csv(file=getDataPath(filename="validation_ZILLOW_CONFIDENTIAL.csv", dir=dir$data), header = TRUE, sep = ",", stringsAsFactor = FALSE)
+# load zipcode, city, state
+data(zipcode)
+# zip, tract, address ratio
+sup$zip <- read.csv(file=getDataPath(filename="ZIP_TRACT_032010.csv", dir=dir$data), colClasses=c(rep("character", times=2), rep("numeric", times=4)),
+                    header = TRUE, sep = ",", stringsAsFactor = FALSE)
+
+# ############################### #
+# DATA PROCESSING ------------------
+# ############################### #
+# >> EXPANDING DATA SOURCE
+# Date Category: 
+#    a.transdate, transdate_previous --> prev_traded_ind (0 or 1), month_from_prev_trade, year_from_prev_trade
+#    b.transdate, builtyear          --> year_house_age, month_house_age
+# 
+# Location Cateogory:
+#    a. latitude, longitude --> neighbour_hood_facility (starbucks_ind, walmart_ind, costco_ind..., wholefood_ind, ..., access_to_public_park)
+#    c. censustract --> population, population_increase_last_5_yaer, unit_increase, (asian_pct, black_pct, latin_pct, white_pct), (median_income, gini_index, ...)
+#
+# >> DATA TRANSFORMATION
+# * transvalue --> log(transvalue): normalization
+# * transdate_previous --> traded_prev = (0 or 1), transdate
+# 
+# >> VARAIABLE INVESTIGATION
+#  *censustract
+# unique in VAL_ZILLOW (350): 401  6600  6100 32002 23202  9000   800 30309
+# unique in TRAIN_ZILLOW (349): NA(4) 28000  9300 23802  7500 26500  7900
+#
+
+# ############################
+# (latitude, longitude) 
+# ############################
+db$TRAIN_ZILLOW$latitude  <- sapply(db$TRAIN_ZILLOW$latitude,  function(x) ifelse(abs(x) <= 1000,  x, x/ 1000000) )
+db$TRAIN_ZILLOW$longitude <- sapply(db$TRAIN_ZILLOW$longitude, function(x) ifelse(abs(x) <= 1000,  x, x/ 1000000) )
+db$VAL_ZILLOW$latitude    <- sapply(db$VAL_ZILLOW$latitude,    function(x) ifelse(abs(x) <= 1000,  x, x/ 1000000) )
+db$VAL_ZILLOW$longitude   <- sapply(db$VAL_ZILLOW$longitude,   function(x) ifelse(abs(x) <= 1000,  x, x/ 1000000) )
+# #####################
+# log(y)
+# #####################
+db$TRAIN_ZILLOW$transvalue <- log(db$TRAIN_ZILLOW$transvalue)
+db$VAL_ZILLOW$transvalue   <- log(db$VAL_ZILLOW$transvalue)
+
+# ######################
+# tract -> zip code
+# ######################
+db$TRAIN_ZILLOW$full_censustract <- sapply(db$TRAIN_ZILLOW$censustract, function(x) num2char(x=x, numchar=5, appendix="530330"))
+db$TRAIN_ZILLOW                   <- merge(db$TRAIN_ZILLOW, sup$zip, by.x="full_censustract", by.y="TRACT", all.x=TRUE)
+db$TRAIN_ZILLOW                   <- merge(db$TRAN_ZILLOW, zipcode, by.x="ZIP", by.y="zip", all.x=TRUE)
+
+db$VAL_ZILLOW$full_censustract <- sapply(db$VAL_ZILLOW$censustract,   function(x) num2char(x=x, numchar=5, appendix="530330"))
+db$VAL_ZILLOW                  <- merge(db$VAL_ZILLOW, sup$zip, by.x="full_censustract", by.y="TRACT", all.x=TRUE)
+db$VAL_ZILLOW                  <- merge(db$VAL_ZILLOW,  zipcode, by.x="ZIP", by.y="zip", all.x=TRUE)
+
+# ##########################################
+# zip code to get median price via zillow
+# ##########################################
+temp$unique_zip  <- unique(c(unique(db$TRAIN_ZILLOW$ZIP), unique(db$VAL_ZILLOW$ZIP)))
+temp$zillow_res  <- sapply(temp$unique_zip, function(zip, APIkey = zillow_api_key){ getZillowZipPrice(zip=zip, APIkey=APIkey) }, 
+                           zillow_api_key = config$zillow_api_key)
+sup$zillow_price <- as.data.frame(cbind("ZIP"=temp$unique_zip, t(temp$zillow_res)))
+# Attach zillow price informtion to unit (ZIP_level)
+db$TRAIN_ZILLOW <- merge(db$TRAIN_ZILLOW, sup$zillow_price, by.x="ZIP", by.y="ZIP", all.x=TRUE)
+db$VAL_ZILLOW   <- merge(db$VAL_ZILLOW,   sup$zillow_price, by.x="ZIP", by.y="ZIP", all.x=TRUE)
+
+# #######################################
+# census data average of 2010s and 2000s
+# #######################################
+
+
+db$all <- rbind(cbind(db$TRAIN_ZILLOW, "is_train"=rep(1, times = nrow(db$TRAIN_ZILLOW))), cbind(db$TRAIN_ZILLOW, "is_train"=rep(0, times = nrow(db$TRAIN_ZILLOW))))
+db$all <- as.data.frame(db$all)
+
+
+# ############################### #
+# EXPLORATERY STUDY ----------------
+# ############################### #
+summary$train_data      <- list() # Summarize train data
+summary$validation_data <- list() # Summarize validation data
+
+summary$train_data      <- dataSummarization(db=db$TRAIN_ZILLOW)
+summary$validation_data <- dataSummarization(db=db$VAL_ZILLOW)
+
+# ############################### #
+# MODEL TRAINING ------------------
+# ############################### #
+
+# ############################### #
+# MODEL SELECTION -----------------
+# ############################### #
+
+# ############################### #
+# PERFORMANCE REPORTING ----------
+# ############################### #
+
+
+>>>>>>> 17e852584a1a729c8aa6f9187ec4b7ff8a3bde24

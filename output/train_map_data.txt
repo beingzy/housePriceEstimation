@@ -1,0 +1,1 @@
+new google.maps.LatLng(47.668783, -122.315814),
