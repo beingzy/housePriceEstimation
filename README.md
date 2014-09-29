@@ -114,7 +114,8 @@ With objective of finding optimistic representation of data, feature selection, 
 
  * **Modeling Human Experts Knowledge**
   Appraisers' specialties could offer insights into determinating factors in house value. And, some special relationships among variables could be leveraged to create new variables.
-
+ 
+ * **Custom Loss Function**
 #### 2. Data Source
 Overall, house price is determined by a broad set of factors. In general, those factors can be classified into either of following categories: house quality information (house layout, built age, design, maintenance and etc.), neighborhood information (residents education level, culture and etc.), public infrastructure information (school quality, traffic condition)  and market force information (supply/demand, macro-economic).  The access to some information can be relatively easy to be gained, in comparison with others. With considering limited access to house quality information, the effort is recommended to be concentrated on incorporating a broad set of public information. Thanks to the advance of mobile/web technology, there are a lot of data source can be leveraged. I will discuss some of them, which I think could be helpful to boost accuracy of house price estimation.
 
@@ -161,5 +162,4 @@ In addition to collecting the presence of a selection of merchants, it could wor
 
 #### 3. Algorithm Discussion
 However, incorporating the broad spectrum of data raised an issue on transforming features.  The traditional algorithms are sensitive to choice on data transformation. Ensemble method can partially reduce the issues. However, supervised deep learning could be utilized to automatic construct abstract representation of data.  With feeds of more relevant information and their appropriate representation, it is expected to train a model with better accuracy.  However, some features maybe informative in some regions/cities. In elsewhere, it could turned out to be an addition to noise. Considering this, clustering analysis might be useful to categorize the nationwide cities based on their industry concentration, wealth conditions and so on. Based on this clustering effects, we can possible build region-specific model to achieve the flexibility of deployments, monitoring, maintenance of models, in addition to potential increase in accuracy.
-
-
+4
