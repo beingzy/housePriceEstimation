@@ -84,7 +84,7 @@
 
     ![scatterplot_error_tranvallog](https://github.com/beingzy/housePriceEstimation/blob/master/output/error_scatterplot.png)
     
-   **Discussion**: Prediction errors for extremely high/low price units are susbtantial than the erros for median price units. This issue could be addressed by learning more cases of extreme prices. Additionally, it would be helpful to increase the accuracy by feeds of different data source, which could privde different information about house price pattern.  
+  * **Discussion**: Prediction errors for extremely high/low price units are susbtantial than the erros for median price units. This issue could be addressed by learning more cases of extreme prices. Additionally, it would be helpful to increase the accuracy by feeds of different data source, which could privde different information about house price pattern.  
 
   * **Final prediction model** is an ensembled one by blending RandomForest, GLM Boosting and SVM(linear) with weights (4/10, 3/10, 3/10).
 
