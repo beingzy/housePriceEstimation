@@ -116,6 +116,9 @@ With objective of finding optimistic representation of data, feature selection, 
   Appraisers' specialties could offer insights into determinating factors in house value. And, some special relationships among variables could be leveraged to create new variables.
  
  * **Custom Loss Function**
+
+ * **Training Specialized Segmentation Model with Partitioning Balanced Data** 
+ 
 #### 2. Data Source
 Overall, house price is determined by a broad set of factors. In general, those factors can be classified into either of following categories: house quality information (house layout, built age, design, maintenance and etc.), neighborhood information (residents education level, culture and etc.), public infrastructure information (school quality, traffic condition)  and market force information (supply/demand, macro-economic).  The access to some information can be relatively easy to be gained, in comparison with others. With considering limited access to house quality information, the effort is recommended to be concentrated on incorporating a broad set of public information. Thanks to the advance of mobile/web technology, there are a lot of data source can be leveraged. I will discuss some of them, which I think could be helpful to boost accuracy of house price estimation.
 
